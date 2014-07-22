@@ -24,6 +24,6 @@ destroy = query . crud.destroy quote
 s = do ->
 	<- init! .flat-map
 	<- create author: 'Matt Brennan' text: 'Mucking about' .flat-map
-	find id:1
+	find author: 'Matt Brennan' .last!
 
 s.to-array console.log
