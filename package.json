@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "any-db": "^2.1.0",
+    "highland": "^1.26.3",
+    "sql": "^0.39.0"
+  },
+  "name": "muck",
+  "version": "0.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/quarterto/Muck.git"
+  },
+  "keywords": [
+    "crud",
+    "gusto",
+    "streams",
+    "sql",
+    "database",
+    "orm"
+  ],
+  "author": "Matt Brennan <mwrbrennan@gmail.com> (http://blog.153.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/quarterto/Muck/issues"
+  },
+  "homepage": "https://github.com/quarterto/Muck"
+}
