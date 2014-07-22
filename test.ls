@@ -9,17 +9,21 @@ conn = any-db.create-connection 'sqlite3://test.db'
 quote = sql.define do
 	name: \quote
 	columns:
-		* name: \id     data-type: 'varchar(100)'
+		* name: \id     data-type: 'integer primary key autoincrement'
 		* name: \author data-type: 'varchar(100)'
 		* name: \text   data-type: 'varchar(100)'
 
-query = (q, cb)-->
-	crud.run-query conn, q .otherwise (σ [null]) .flat-map cb
+query   = crud.run-query conn
+init    = query . -> crud.init quote
+create  = query . crud.create  quote
+read    = query . -> crud.read quote
+find    = query . crud.find    quote
+update  = query . crud.update  quote
+destroy = query . crud.destroy quote
 
 s = do ->
-	<- query quote.create!.if-not-exists!.to-query!
-	<- query crud.create quote, id:\1 author:'Matt Brennan' text:'Mucking about'
-	query (crud.read quote), -> σ [it]
-
+	<- init! .flat-map
+	<- create author: 'Matt Brennan' text: 'Mucking about' .flat-map
+	find id:1
 
 s.to-array console.log

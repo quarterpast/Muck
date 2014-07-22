@@ -1,25 +1,29 @@
 σ = require \highland
 
 # run-query :: Connection → Query → Stream Result
-exports.run-query = (conn, {text, values})-->
-	σ conn.query text, values
+export run-query = (conn, sql)-->
+	{text, values} = sql.to-query!
+	σ conn.query text, values .otherwise (σ [null])
 
-exports.create = (model, data)-->
+export init = (model)->
+	model.create!.if-not-exists!
+
+export create = (model, data)-->
 	model.insert data
-	.to-query!
 
-exports.read = (model)->
-	model.select do
-		model.star!
-	.from model
-	.to-query!
+export read-cols = (model, columns)-->
+	model.select columns
 
-exports.update = (model, id, data)-->
+export read = (model)->
+	read-cols model, model.star!
+
+export find = (model, props)-->
+	read model .where props
+
+export update = (model, id, data)-->
 	model.update data
 	.where model.id.equals id
-	.to-query!
 
-exports.delete = (model, id)-->
+export destroy = (model, id)-->
 	model.delete!
 	.where model.id.equals id
-	.to-query!
