@@ -25,6 +25,7 @@ s = do ->
 	<- init! .flat-map
 	<- create author: 'Matt Brennan' text: 'Mucking about' .flat-map
 	<- destroy 1 .flat-map
-	read!
+	<- update 2 author: "Matt Brennan #{Date.now!}" .flat-map
+	find id:2
 
 s.to-array console.log
