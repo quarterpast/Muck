@@ -1,8 +1,11 @@
 require! {
 	\any-db
 	'./crud'
+	handle: oban
+	resp: dram
+	lw: livewire
+	http
 	sql
-	σ: highland
 }
 
 conn = any-db.create-connection 'sqlite3://test.db'
@@ -21,11 +24,29 @@ find    = query . crud.find    quote
 update  = query . crud.update  quote
 destroy = query . crud.destroy quote
 
-s = do ->
-	<- init! .flat-map
-	<- create author: 'Matt Brennan' text: 'Mucking about' .flat-map
-	<- destroy 1 .flat-map
-	<- update 2 author: "Matt Brennan #{Date.now!}" .flat-map
-	find id:2
+json = (obj)->
+	resp.ok JSON.stringify obj
+		.with-header \Content-type \application/json
 
-s.to-array console.log
+app = lw.route [
+	lw.get  '/quote' -> read! .collect! .flat-map json
+	lw.get  '/quote/:id' ({params})->
+		quote <- find {params.id} .flat-map
+		if quote?
+			json that
+		else resp.not-found "quote #{params.id} not found"
+	lw.post '/quote' (req)->
+		data <- lw.json req .flat-map
+		<- create data .flat-map
+		find data .head! .flat-map json
+	lw.delete '/quote/:id' ({params})->
+		quote <- find {params.id} .flat-map
+		if quote?
+			<- destroy params.id .flat-map
+			resp.ok!
+		else resp.not-found "quote #{params.id} not found"
+]
+
+server = http.create-server handle app
+<- server.listen process.env.PORT ? 3000
+init!
