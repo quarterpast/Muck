@@ -2,10 +2,11 @@ require! {
 	\any-db
 	'./crud'
 	handle: oban
-	resp: dram
-	lw: livewire
+	dram.ok, dram.with-header, dram.not-found
+	sodor.Controller
 	http
 	sql
+	livewire.route
 }
 
 conn = any-db.create-connection 'sqlite3://test.db'
@@ -24,29 +25,31 @@ find    = query . crud.find    quote
 update  = query . crud.update  quote
 destroy = query . crud.destroy quote
 
-json = (obj)->
-	resp.ok JSON.stringify obj
-		.with-header \Content-type \application/json
+json = (with-header \Content-type \application/json) . ok . JSON.stringify
 
-app = lw.route [
-	lw.get  '/quote' -> read! .collect! .flat-map json
-	lw.get  '/quote/:id' ({params})->
-		quote <- find {params.id} .flat-map
-		if quote?
-			json that
-		else resp.not-found "quote #{params.id} not found"
-	lw.post '/quote' (req)->
-		data <- lw.json req .flat-map
+class Quote extends Controller
+	list: @root ->
+		read! .collect! .flat-map json
+
+	show: @root (id)->
+		quote <- find {id} .flat-map
+		if quote? then json that
+		else not-found "quote #id not found"
+
+	create: @root @post ->
+		data <- lw.json @request .flat-map
 		<- create data .flat-map
 		find data .head! .flat-map json
-	lw.delete '/quote/:id' ({params})->
-		quote <- find {params.id} .flat-map
-		if quote?
-			<- destroy params.id .flat-map
-			resp.ok!
-		else resp.not-found "quote #{params.id} not found"
-]
 
-server = http.create-server handle app
+	destroy: @root @delete (id)->
+		quote <- find {id} .flat-map
+		if quote?
+			destroy id
+				.map -> ''
+				.flat-map ok
+		else not-found "quote #id not found"
+
+
+server = http.create-server handle route Quote.routes!
 <- server.listen process.env.PORT ? 3000
 init!
