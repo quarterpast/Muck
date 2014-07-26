@@ -74,3 +74,15 @@ export 'Muck':
 			.to-array (xs)->
 				expect xs.0 .to.be 'hello'
 				done!
+
+	'mixin':
+		'has things as methods': (done)->
+			class Foo implements crud.mixin
+				connection: -> query: (text, values)->
+					expect text .to.be 'SELECT "test".* FROM "test"'
+					done!
+				model: -> test
+
+			foo = new Foo
+			foo.read!
+

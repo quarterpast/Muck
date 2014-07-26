@@ -28,3 +28,8 @@ export destroy = (model, id)-->
 	model.delete!
 	.where model.id.equals id
 
+to-method = (fn)->
+	(...args)->
+		run-query @connection!, fn @model!, ...args
+
+export mixin = {[k, to-method v] for k,v of exports}
