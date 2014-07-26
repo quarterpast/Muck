@@ -1,7 +1,8 @@
 require! {
-	'karma-sinon-expect'.expect
+	'expect.js'
 	crud: './index.js'
 	sql
+	σ: highland
 }
 
 test = sql.define do
@@ -52,3 +53,24 @@ export 'Muck':
 			query = crud.destroy test, 1 .to-query!
 			expect query.text .to.be 'DELETE FROM "test" WHERE ("test"."id" = $1)'
 			expect query.values .to.eql [1]
+
+	'run-query':
+		'wraps a query in a highland stream': (done)->
+			conn = query: (text, values)->
+				expect text   .to.be 'hello'
+				expect values .to.eql ['a']
+				return ['hello']
+
+			crud.run-query conn, to-query: -> text:'hello' values:['a']
+			.to-array (xs)->
+				expect xs.0 .to.be 'hello'
+				done!
+
+		'ensures the stream contains something so we can still map': (done)->
+			conn = query: -> []
+
+			crud.run-query conn, to-query: -> {}
+			.flat-map -> ['hello']
+			.to-array (xs)->
+				expect xs.0 .to.be 'hello'
+				done!

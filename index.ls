@@ -27,3 +27,4 @@ export update = (model, id, data)-->
 export destroy = (model, id)-->
 	model.delete!
 	.where model.id.equals id
+
