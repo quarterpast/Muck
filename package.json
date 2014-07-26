@@ -1,7 +1,9 @@
 {
   "dependencies": {
+    "highland": "^1.26.3"
+  },
+  "peerDependencies": {
     "any-db": "^2.1.0",
-    "highland": "^1.26.3",
     "sql": "^0.39.0"
   },
   "name": "muck",
