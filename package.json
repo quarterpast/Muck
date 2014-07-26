@@ -11,8 +11,9 @@
   "main": "index.js",
   "devDependencies": {
     "LiveScript": "^1.2.0",
-    "expect.js": "^0.3.1",
-    "mocha": "^1.21.0"
+    "karma-sinon-expect": "^0.1.4",
+    "mocha": "^1.21.0",
+    "sql": "^0.39.0"
   },
   "scripts": {
     "test": "make test"
