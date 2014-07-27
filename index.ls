@@ -30,6 +30,13 @@ export destroy = (model, id)-->
 
 to-method = (fn)->
 	(...args)->
-		run-query @connection!, fn @model!, ...args
+		@run-query fn @model!, ...args
+	
+run-query-method = (sql)->
+	run-query @connection!, sql
 
-export mixin = {[k, to-method v] for k,v of exports}
+
+export mixin = {[
+	k
+	if k is \runQuery then run-query-method else to-method v
+] for k,v of exports}
