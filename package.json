@@ -7,7 +7,7 @@
     "sql": "^0.39.0"
   },
   "name": "muck",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "index.js",
   "devDependencies": {
     "LiveScript": "^1.2.0",
