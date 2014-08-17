@@ -66,15 +66,6 @@ export 'Muck':
 				expect xs.0 .to.be 'hello'
 				done!
 
-		'ensures the stream contains something so we can still map': (done)->
-			conn = query: -> []
-
-			crud.run-query conn, to-query: -> {}
-			.flat-map -> ['hello']
-			.to-array (xs)->
-				expect xs.0 .to.be 'hello'
-				done!
-
 	'mixin':
 		'has things as methods': (done)->
 			class Foo implements crud.mixin
@@ -85,4 +76,16 @@ export 'Muck':
 
 			foo = new Foo
 			foo.read!
+
+		'ensures the stream contains something so we can still map': (done)->
+			class Foo implements crud.mixin
+				connection: -> query: (text, values)-> σ []
+				model: -> test
+
+			foo = new Foo
+			foo.init!
+			.flat-map -> ['hello']
+			.to-array ([x])->
+				expect x .to.be 'hello'
+				done!
 

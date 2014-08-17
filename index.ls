@@ -3,7 +3,7 @@
 # run-query :: Connection → Query → Stream Result
 export run-query = (conn, sql)-->
 	{text, values} = sql.to-query!
-	σ conn.query text, values .otherwise (σ [null])
+	σ conn.query text, values
 
 export init = (model)->
 	model.create!.if-not-exists!
@@ -28,13 +28,18 @@ export destroy = (model, id)-->
 	model.delete!
 	.where model.id.equals id
 
+export done = Object.create null
+
 to-method = (fn)->
 	(...args)->
-		@run-query fn @model!, ...args
-	
+		result = @run-query fn @model!, ...args
+		return if has-results fn then result
+		else result.otherwise [done]
+
 run-query-method = (sql)->
 	run-query @connection!, sql
 
+has-results = (in [read, read-cols, find])
 
 export mixin = {[
 	k
